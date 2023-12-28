@@ -19,6 +19,48 @@ from ..reader import (
 
 
 class Local_(Proc):
+    """
+    Represents a local processor for high-frequency trading backtesting.
+
+    Args:
+        reader: The data reader object.
+        orders_to_exch: The orders to exchange object.
+        orders_from_exch: The orders from exchange object.
+        depth: The depth object.
+        state: The state object.
+        order_latency: The order latency object.
+        trade_list_size: The size of the trade list.
+
+    Attributes:
+        trade_len: The length of the trade list.
+        last_trades: The last trades array.
+        user_data: The user data array.
+    """
+
+    def __init__(
+            self,
+            reader,
+            orders_to_exch,
+            orders_from_exch,
+            depth,
+            state,
+            order_latency,
+            trade_list_size
+    ):
+        self._proc_init(
+            reader,
+            orders_to_exch,
+            orders_from_exch,
+            depth,
+            state,
+            order_latency
+        )
+        self.trade_len = 0
+        self.last_trades = np.full((trade_list_size, self.data.shape[1]), np.nan, np.float64)
+        self.user_data = np.full((20, self.data.shape[1]), np.nan, np.float64)
+
+    # Rest of the code...
+class Local_(Proc):
     def __init__(
             self,
             reader,

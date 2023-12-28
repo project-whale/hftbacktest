@@ -20,6 +20,28 @@ from ..reader import (
 
 
 class NoPartialFillExchange_(Proc):
+    """
+    A class representing an exchange with no partial fills.
+
+    Attributes:
+        sell_orders (Dict): A dictionary of sell orders, where the key is the order ID and the value is the order ladder.
+        buy_orders (Dict): A dictionary of buy orders, where the key is the order ID and the value is the order ladder.
+        queue_model: The queue model used for order execution.
+
+    Methods:
+        reset: Reset the exchange to its initial state.
+        _next_data_timestamp: Get the next data timestamp.
+        _process_recv_order: Process a received order.
+        _process_data: Process a data event.
+        __check_if_sell_filled: Check if a sell order is filled.
+        __check_if_buy_filled: Check if a buy order is filled.
+        on_new: Handle a new order event.
+        on_bid_qty_chg: Handle a bid quantity change event.
+        on_ask_qty_chg: Handle an ask quantity change event.
+        on_best_bid_update: Handle a best bid update event.
+        on_best_ask_update: Handle a best ask update event.
+        __ack_new: Acknowledge a new order.
+    """
     def __init__(
             self,
             reader,
@@ -53,6 +75,22 @@ class NoPartialFillExchange_(Proc):
             lot_size,
             snapshot
     ):
+        """
+        Reset the exchange to its initial state.
+
+        Args:
+            start_position: The starting position.
+            start_balance: The starting balance.
+            start_fee: The starting fee.
+            maker_fee: The maker fee.
+            taker_fee: The taker fee.
+            tick_size: The tick size.
+            lot_size: The lot size.
+            snapshot: The snapshot.
+
+        Returns:
+            None
+        """
         self._proc_reset(
             start_position,
             start_balance,
@@ -68,9 +106,27 @@ class NoPartialFillExchange_(Proc):
         self.queue_model.reset()
 
     def _next_data_timestamp(self):
+        """
+        Get the next data timestamp.
+
+        Returns:
+            The next data timestamp.
+        """
         return self._next_data_timestamp_column(COL_EXCH_TIMESTAMP)
 
     def _process_recv_order(self, order, recv_timestamp, wait_resp, next_timestamp):
+        """
+        Process a received order.
+
+        Args:
+            order: The order to process.
+            recv_timestamp: The received timestamp.
+            wait_resp: The order ID to wait for response.
+            next_timestamp: The next timestamp.
+
+        Returns:
+            The timestamp of the order's response.
+        """
         # Process a new order.
         if order.req == NEW:
             order.req = NONE
@@ -101,6 +157,15 @@ class NoPartialFillExchange_(Proc):
         return next_timestamp
 
     def _process_data(self, row):
+        """
+        Process a data event.
+
+        Args:
+            row: The data row.
+
+        Returns:
+            0
+        """
         # Process a depth event
         if row[COL_EVENT] == DEPTH_CLEAR_EVENT:
             self.depth.clear_depth(row[COL_SIDE], row[COL_PRICE])
@@ -173,6 +238,18 @@ class NoPartialFillExchange_(Proc):
         return 0
 
     def __check_if_sell_filled(self, order, price_tick, qty, timestamp):
+        """
+        Check if a sell order is filled.
+
+        Args:
+            order: The sell order to check.
+            price_tick: The price tick.
+            qty: The quantity.
+            timestamp: The timestamp.
+
+        Returns:
+            None
+        """
         if order.price_tick < price_tick:
             self.__fill(order, timestamp, True)
         elif order.price_tick == price_tick:
@@ -182,6 +259,18 @@ class NoPartialFillExchange_(Proc):
                 self.__fill(order, timestamp, True)
 
     def __check_if_buy_filled(self, order, price_tick, qty, timestamp):
+        """
+        Check if a buy order is filled.
+
+        Args:
+            order: The buy order to check.
+            price_tick: The price tick.
+            qty: The quantity.
+            timestamp: The timestamp.
+
+        Returns:
+            None
+        """
         if order.price_tick > price_tick:
             self.__fill(order, timestamp, True)
         elif order.price_tick == price_tick:
@@ -191,6 +280,15 @@ class NoPartialFillExchange_(Proc):
                 self.__fill(order, timestamp, True)
 
     def on_new(self, order):
+        """
+        Handle a new order event.
+
+        Args:
+            order: The new order.
+
+        Returns:
+            None
+        """
         self.queue_model.new(order, self)
 
     def on_bid_qty_chg(
@@ -200,6 +298,18 @@ class NoPartialFillExchange_(Proc):
             new_qty,
             timestamp
     ):
+        """
+        Handle a bid quantity change event.
+
+        Args:
+            price_tick: The price tick.
+            prev_qty: The previous quantity.
+            new_qty: The new quantity.
+            timestamp: The timestamp.
+
+        Returns:
+            None
+        """
         if price_tick in self.buy_orders:
             for order in self.buy_orders[price_tick].values():
                 self.queue_model.depth(order, prev_qty, new_qty, self)
@@ -211,11 +321,34 @@ class NoPartialFillExchange_(Proc):
             new_qty,
             timestamp
     ):
+        """
+        Handle an ask quantity change event.
+
+        Args:
+            price_tick: The price tick.
+            prev_qty: The previous quantity.
+            new_qty: The new quantity.
+            timestamp: The timestamp.
+
+        Returns:
+            None
+        """
         if price_tick in self.sell_orders:
             for order in self.sell_orders[price_tick].values():
                 self.queue_model.depth(order, prev_qty, new_qty, self)
 
     def on_best_bid_update(self, prev_best, new_best, timestamp):
+        """
+        Handle a best bid update event.
+
+        Args:
+            prev_best: The previous best bid.
+            new_best: The new best bid.
+            timestamp: The timestamp.
+
+        Returns:
+            None
+        """
         # If the best has been significantly updated compared to the previous best, it would be better to iterate
         # orders dict instead of order price ladder.
         if (prev_best == INVALID_MIN) \
@@ -230,6 +363,17 @@ class NoPartialFillExchange_(Proc):
                         self.__fill(order, timestamp, True)
 
     def on_best_ask_update(self, prev_best, new_best, timestamp):
+        """
+        Handle a best ask update event.
+
+        Args:
+            prev_best: The previous best ask.
+            new_best: The new best ask.
+            timestamp: The timestamp.
+
+        Returns:
+            None
+        """
         # If the best has been significantly updated compared to the previous best, it would be better to iterate
         # orders dict instead of order price ladder.
         if (prev_best == INVALID_MAX) \
@@ -244,6 +388,16 @@ class NoPartialFillExchange_(Proc):
                         self.__fill(order, timestamp, True)
 
     def __ack_new(self, order, timestamp):
+        """
+        Acknowledge a new order.
+
+        Args:
+            order: The new order.
+            timestamp: The timestamp.
+
+        Returns:
+            The timestamp of the order's response.
+        """
         if order.order_id in self.orders:
             raise KeyError('order_id already exists')
 

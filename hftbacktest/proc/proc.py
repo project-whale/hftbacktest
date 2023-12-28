@@ -7,10 +7,44 @@ from ..order import order_ladder_ty, order_ty, OrderBus
 
 
 class Proc:
+    """
+    The Proc class represents a processor that handles data and orders in a high-frequency trading backtesting system.
+
+    Attributes:
+        reader: The data reader object.
+        next_data: The next data to be processed.
+        data: The current data being processed.
+        row_num: The current row number in the data.
+        next_row_num: The next row number in the data.
+        orders: A dictionary that stores the orders.
+        orders_to: The order bus for sending orders.
+        orders_from: The order bus for receiving orders.
+        depth: The depth object that stores the bid and ask depth.
+        state: The state object that stores the trading state.
+        order_latency: The order latency object that measures the latency of orders.
+
+    Methods:
+        _proc_init: Initializes the processor with the necessary parameters.
+        _proc_reset: Resets the processor to the initial state.
+        next_timestamp: Returns the next valid timestamp.
+        _next_data_timestamp_column: Finds the next valid timestamp in a specific column.
+        process: Processes the data and orders.
+    """
     def __init__(self):
         pass
 
     def _proc_init(self, reader, orders_to, orders_from, depth, state, order_latency):
+        """
+        Initializes the processor with the necessary parameters.
+
+        Args:
+            reader: The data reader object.
+            orders_to: The order bus for sending orders.
+            orders_from: The order bus for receiving orders.
+            depth: The depth object that stores the bid and ask depth.
+            state: The state object that stores the trading state.
+            order_latency: The order latency object that measures the latency of orders.
+        """
         self.reader = reader
         self.next_data = reader.next()
         self.data = np.empty((0, self.next_data.shape[1]), self.next_data.dtype)
@@ -37,6 +71,19 @@ class Proc:
             lot_size,
             snapshot
     ):
+        """
+        Resets the processor to the initial state.
+
+        Args:
+            start_position: The starting position.
+            start_balance: The starting balance.
+            start_fee: The starting fee.
+            maker_fee: The maker fee.
+            taker_fee: The taker fee.
+            tick_size: The tick size.
+            lot_size: The lot size.
+            snapshot: The snapshot of the depth.
+        """
         self.next_data = self.reader.next()
         self.data = np.empty((0, self.next_data.shape[1]), self.next_data.dtype)
         self.row_num = 0
@@ -62,6 +109,12 @@ class Proc:
         self.order_latency.reset()
 
     def next_timestamp(self):
+        """
+        Returns the next valid timestamp.
+
+        Returns:
+            The next valid timestamp.
+        """
         next_data_timestamp = self._next_data_timestamp()
         next_recv_order_timestamp = self.orders_from.frontmost_timestamp
 
@@ -75,6 +128,15 @@ class Proc:
             return next_data_timestamp
 
     def _next_data_timestamp_column(self, column):
+        """
+        Finds the next valid timestamp in a specific column.
+
+        Args:
+            column: The column index.
+
+        Returns:
+            The next valid timestamp in the specified column.
+        """
         # Finds the next valid timestamp
         while True:
             if self.next_row_num < len(self.next_data):
@@ -99,6 +161,15 @@ class Proc:
             self.next_row_num += 1
 
     def process(self, wait_resp):
+        """
+        Processes the data and orders.
+
+        Args:
+            wait_resp: Whether to wait for a response from the order bus.
+
+        Returns:
+            The next timestamp.
+        """
         next_data_timestamp = self._next_data_timestamp()
         next_recv_order_timestamp = self.orders_from.frontmost_timestamp
 
@@ -142,18 +213,42 @@ class Proc:
 
     @property
     def tick_size(self):
+        """
+        The tick size property.
+
+        Returns:
+            The tick size.
+        """
         return self.depth.tick_size
 
     @property
     def lot_size(self):
+        """
+        The lot size property.
+
+        Returns:
+            The lot size.
+        """
         return self.depth.lot_size
 
     @property
     def bid_depth(self):
+        """
+        The bid depth property.
+
+        Returns:
+            The bid depth.
+        """
         return self.depth.bid_depth
 
     @property
     def ask_depth(self):
+        """
+        The ask depth property.
+
+        Returns:
+            The ask depth.
+        """
         return self.depth.ask_depth
 
 

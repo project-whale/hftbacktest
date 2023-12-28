@@ -122,22 +122,55 @@ order_tup_ty = Tuple((order_ty, int64))
 
 @jitclass
 class OrderBus:
+    """
+    OrderBus class represents a bus for managing orders in a high-frequency trading backtesting system.
+
+    Attributes:
+        order_list (ListType): A list of order tuples.
+        orders (DictType): A dictionary of order IDs and their counts.
+        frontmost_timestamp (int64): The frontmost timestamp of the order list.
+
+    Methods:
+        __init__: Initializes the OrderBus object.
+        append: Appends an order to the order list.
+        get: Retrieves the receive timestamp of an order by its order ID.
+        reset: Resets the order list and order dictionary.
+        __getitem__: Retrieves an order tuple by its index.
+        __len__: Returns the length of the order list.
+        delitem: Deletes an order tuple by its index.
+        __contains__: Checks if an order ID exists in the order dictionary.
+    """
     order_list: ListType(order_tup_ty)
     orders: DictType(int64, int64)
     frontmost_timestamp: int64
 
     def __init__(self):
+        """
+        Initializes the OrderBus object.
+
+        Parameters:
+            None
+
+        Returns:
+            None
+        """
         self.order_list = List.empty_list(order_tup_ty)
         self.orders = Dict.empty(int64, int64)
         self.frontmost_timestamp = 0
 
     def append(self, order, timestamp):
+        """
+        Appends an order to the order list.
+
+        Parameters:
+            order (Order): The order to be appended.
+            timestamp (int): The timestamp of the order.
+
+        Returns:
+            None
+        """
         timestamp = int(timestamp)
 
-        # Prevents the order sequence from being out of order.
-        # In crypto exchanges that use REST APIs, it might be still possible for order requests sent later to reach the
-        # matching engine before order requests sent earlier. But, for the purpose of simplifying the backtesting
-        # process, all requests and responses are assumed to be in order.
         if len(self.order_list) > 0:
             _, latest_timestamp = self.order_list[-1]
             if timestamp < latest_timestamp:
@@ -156,23 +189,77 @@ class OrderBus:
             self.frontmost_timestamp = min(self.frontmost_timestamp, timestamp)
 
     def get(self, order_id):
+        """
+        Retrieves the receive timestamp of an order by its order ID.
+
+        Parameters:
+            order_id (int): The order ID.
+
+        Returns:
+            int: The receive timestamp of the order.
+
+        Raises:
+            KeyError: If the order ID does not exist in the order list.
+        """
         for order, recv_timestamp in self.order_list:
             if order.order_id == order_id:
                 return recv_timestamp
         raise KeyError
 
     def reset(self):
+        """
+        Resets the order list and order dictionary.
+
+        Parameters:
+            None
+
+        Returns:
+            None
+        """
         self.order_list.clear()
         self.orders.clear()
         self.frontmost_timestamp = 0
 
     def __getitem__(self, key):
+        """
+        Retrieves an order tuple by its index.
+
+        Parameters:
+            key (int): The index of the order tuple.
+
+        Returns:
+            Tuple[Order, int]: The order tuple.
+
+        Raises:
+            IndexError: If the index is out of range.
+        """
         return self.order_list[key]
 
     def __len__(self):
+        """
+        Returns the length of the order list.
+
+        Parameters:
+            None
+
+        Returns:
+            int: The length of the order list.
+        """
         return len(self.order_list)
 
     def delitem(self, key):
+        """
+        Deletes an order tuple by its index.
+
+        Parameters:
+            key (int): The index of the order tuple.
+
+        Returns:
+            None
+
+        Raises:
+            IndexError: If the index is out of range.
+        """
         order, _ = self.order_list[key]
         del self.order_list[key]
         self.orders[order.order_id] -= 1
@@ -180,4 +267,13 @@ class OrderBus:
             del self.orders[order.order_id]
 
     def __contains__(self, key):
+        """
+        Checks if an order ID exists in the order dictionary.
+
+        Parameters:
+            key (int): The order ID.
+
+        Returns:
+            bool: True if the order ID exists, False otherwise.
+        """
         return key in self.orders

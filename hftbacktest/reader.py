@@ -59,28 +59,86 @@ class Cache:
 
 @jitclass
 class DataReader:
+    """
+    A class for reading and managing data files.
+
+    Attributes:
+        file_list (ListType[unicode_type]): A list of file paths.
+        data_num (int64): The current index of the data being read.
+        cache (Cache.class_type.instance_type): An instance of the Cache class for caching data.
+
+    Methods:
+        __init__(self, cache): Initializes a DataReader object.
+        add_file(self, filepath): Adds a file path to the file_list.
+        add_data(self, data): Adds data to the cache.
+        release(self, data): Removes data from the cache.
+        next(self): Reads the next data file and returns the data.
+
+    """
+
     file_list: ListType(unicode_type)
     data_num: int64
     cache: Cache.class_type.instance_type
 
     def __init__(self, cache):
+        """
+        Initializes a DataReader object.
+
+        Args:
+            cache (Cache.class_type.instance_type): An instance of the Cache class for caching data.
+
+        """
         self.file_list = List.empty_list(unicode_type)
         self.data_num = 0
         self.cache = cache
 
     def add_file(self, filepath):
+        """
+        Adds a file path to the file_list.
+
+        Args:
+            filepath (unicode_type): The path of the file to be added.
+
+        Raises:
+            ValueError: If the filepath is empty.
+
+        """
         if filepath == '':
             raise ValueError
         self.file_list.append(filepath)
 
     def add_data(self, data):
+        """
+        Adds data to the cache.
+
+        Args:
+            data: The data to be added to the cache.
+
+        """
         self.cache[len(self.file_list)] = data
         self.file_list.append('')
 
     def release(self, data):
+        """
+        Removes data from the cache.
+
+        Args:
+            data: The data to be removed from the cache.
+
+        """
         self.cache.remove(data)
 
     def next(self):
+        """
+        Reads the next data file and returns the data.
+
+        Returns:
+            data: The data read from the file.
+
+        Raises:
+            ValueError: If the filepath is empty or the data has less than 6 columns.
+
+        """
         if self.data_num < len(self.file_list):
             filepath = self.file_list[self.data_num]
             if not self.cache.__contains__(self.data_num):

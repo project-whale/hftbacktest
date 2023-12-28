@@ -37,6 +37,54 @@ from ..reader import (
 
 
 class PartialFillExchange_(Proc):
+    """
+    A class representing a partial fill exchange for high-frequency trading backtesting.
+
+    Attributes:
+        sell_orders (Dict): A dictionary of sell orders.
+        buy_orders (Dict): A dictionary of buy orders.
+        queue_model: The queue model used for order execution.
+
+    Methods:
+        reset: Resets the exchange to its initial state.
+        _next_data_timestamp: Returns the next data timestamp.
+        _process_recv_order: Processes a received order.
+        _process_data: Processes a data row.
+        __check_if_sell_filled: Checks if a sell order is filled.
+        __check_if_buy_filled: Checks if a buy order is filled.
+        on_new: Handles a new order event.
+        on_bid_qty_chg: Handles a change in bid quantity.
+        on_ask_qty_chg: Handles a change in ask quantity.
+        on_best_bid_update: Handles an update in the best bid price.
+        on_best_ask_update: Handles an update in the best ask price.
+        __ack_new: Acknowledges a new order.
+
+    """
+
+    def __init__(
+            self,
+            reader,
+            orders_to_local,
+            orders_from_local,
+            depth,
+            state,
+            order_latency,
+            queue_model
+    ):
+        self._proc_init(
+            reader,
+            orders_to_local,
+            orders_from_local,
+            depth,
+            state,
+            order_latency
+        )
+        self.sell_orders = Dict.empty(int64, order_ladder_ty)
+        self.buy_orders = Dict.empty(int64, order_ladder_ty)
+        self.queue_model = queue_model
+
+    # Rest of the code...
+class PartialFillExchange_(Proc):
     def __init__(
             self,
             reader,

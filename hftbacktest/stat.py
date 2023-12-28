@@ -49,7 +49,7 @@ class Recorder:
 
 
 class Stat:
-    r"""
+    """
     Calculates performance statistics and generates a summary of performance metrics.
 
     Args:
@@ -80,7 +80,7 @@ class Stat:
 
     @property
     def recorder(self):
-        r"""
+        """
         Returns a ``Recorder`` instance to record performance statistics.
         """
         return jitclass()(Recorder)(
@@ -95,7 +95,7 @@ class Stat:
         )
 
     def datetime(self):
-        r"""
+        """
         Converts and returns a DateTime series from the timestamp.
 
         Returns:
@@ -104,7 +104,7 @@ class Stat:
         return pd.to_datetime(np.asarray(self.timestamp), utc=self.utc, unit=self.unit)
 
     def equity(self, resample: Optional[str] = None, include_fee: bool = True, datetime: bool = True):
-        r"""
+        """
         Calculates equity values.
 
         Args:
@@ -142,7 +142,7 @@ class Stat:
             return equity.resample(resample).last()
 
     def sharpe(self, resample: str, include_fee: bool = True, trading_days: int = 365):
-        r"""
+        """
         Calculates the Sharpe Ratio without considering benchmark rates.
 
         Args:
@@ -159,7 +159,7 @@ class Stat:
         return np.divide(pnl.mean(), std) * np.sqrt(c * trading_days)
 
     def sortino(self, resample: str, include_fee: bool = True, trading_days: int = 365):
-        r"""
+        """
         Calculates Sortino Ratio.
 
         Args:
@@ -175,7 +175,7 @@ class Stat:
         return np.divide(pnl.mean(), std) * np.sqrt(c * trading_days)
 
     def riskreturnratio(self, include_fee: bool = True):
-        r"""
+        """
         Calculates Risk-Return Ratio, which is Annualized Return / Maximum Draw Down over the entire period.
 
         Args:
@@ -187,7 +187,7 @@ class Stat:
         return self.annualised_return(include_fee=include_fee) / self.maxdrawdown(include_fee=include_fee)
 
     def drawdown(self, resample: Optional[str] = None, include_fee: bool = True):
-        r"""
+        """
         Retrieves Draw Down time-series.
 
         Args:
@@ -203,7 +203,7 @@ class Stat:
         return drawdown
 
     def maxdrawdown(self, denom: Optional[float] = None, include_fee: bool = True):
-        r"""
+        """
         Retrieves Maximum Draw Down.
 
         Args:
@@ -220,7 +220,7 @@ class Stat:
             return mdd / denom
 
     def daily_trade_num(self):
-        r"""
+        """
         Retrieves the average number of daily trades.
 
         Returns:
@@ -229,7 +229,7 @@ class Stat:
         return pd.Series(self.trade_num, index=self.datetime()).diff().rolling('1d').sum().mean()
 
     def daily_trade_volume(self):
-        r"""
+        """
         Retrieves the average quantity of daily trades.
 
         Returns:
@@ -238,7 +238,7 @@ class Stat:
         return pd.Series(self.trade_qty, index=self.datetime()).diff().rolling('1d').sum().mean()
 
     def daily_trade_amount(self):
-        r"""
+        """
         Retrieves the average value of daily trades.
 
         Returns:
@@ -247,7 +247,7 @@ class Stat:
         return pd.Series(self.trade_amount, index=self.datetime()).diff().rolling('1d').sum().mean()
 
     def annualised_return(self, denom: Optional[float] = None, include_fee: bool = True, trading_days: int = 365):
-        r"""
+        """
         Calculates annualised return.
 
         Args:
@@ -267,7 +267,7 @@ class Stat:
             return equity[-1] * c * trading_days / denom
 
     def summary(self, capital: Optional[float] = None, resample: str = '5min', trading_days: int = 365):
-        r"""
+        """
         Generates a summary of performance metrics.
 
         Args:

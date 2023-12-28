@@ -124,13 +124,11 @@ def convert(
         depth_has_header: Optional[bool] = None,
         trades_has_header: Optional[bool] = None
 ) -> NDArray:
-    r"""
+    """
     Converts Binance Historical Market Data files into a format compatible with HftBacktest.
     Since it doesn't have a local timestamp, it lacks feed latency information, which can result in a significant
     discrepancy between live and backtest results.
     Collecting feed data yourself or obtaining the high quality of data from a data vendor is strongly recommended.
-
-    https://www.binance.com/en/landing/data
 
     Args:
         depth_filename: Depth data filename

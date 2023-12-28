@@ -30,6 +30,10 @@ def depth_above(depth, start, end):
 
 @jitclass
 class MarketDepth:
+    """
+    Represents the market depth for a particular instrument.
+    """
+
     tick_size: float64
     lot_size: float64
     ask_depth: DictType(int64, float64)
@@ -40,6 +44,13 @@ class MarketDepth:
     high_ask_tick: int64
 
     def __init__(self, tick_size, lot_size):
+        """
+        Initializes a new instance of the MarketDepth class.
+
+        Parameters:
+        - tick_size (float): The tick size of the instrument.
+        - lot_size (float): The lot size of the instrument.
+        """
         self.tick_size = tick_size
         self.lot_size = lot_size
         self.ask_depth = Dict.empty(int64, float64)
@@ -50,6 +61,12 @@ class MarketDepth:
         self.high_ask_tick = INVALID_MIN
 
     def apply_snapshot(self, data):
+        """
+        Applies a snapshot of market depth data.
+
+        Parameters:
+        - data (list): The market depth data to apply.
+        """
         self.best_bid_tick = INVALID_MIN
         self.best_ask_tick = INVALID_MAX
         self.low_bid_tick = INVALID_MAX
@@ -77,6 +94,13 @@ class MarketDepth:
             side,
             clear_upto_price,
     ):
+        """
+        Clears the market depth up to the specified price.
+
+        Parameters:
+        - side (str): The side of the market depth to clear ('BUY' or 'SELL').
+        - clear_upto_price (float): The price up to which the market depth should be cleared.
+        """
         clear_upto = round(clear_upto_price / self.tick_size)
         if side == BUY:
             if self.best_bid_tick != INVALID_MIN:
@@ -109,6 +133,15 @@ class MarketDepth:
             timestamp,
             callback=None
     ):
+        """
+        Updates the bid depth with the specified price and quantity.
+
+        Parameters:
+        - price (float): The price of the bid.
+        - qty (float): The quantity of the bid.
+        - timestamp (int): The timestamp of the update.
+        - callback (object): An optional callback object to handle bid depth updates.
+        """
         price_tick = round(price / self.tick_size)
         prev_qty = self.bid_depth.get(price_tick, 0)
         self.bid_depth[price_tick] = qty
@@ -140,6 +173,15 @@ class MarketDepth:
             timestamp,
             callback=None
     ):
+        """
+        Updates the ask depth with the specified price and quantity.
+
+        Parameters:
+        - price (float): The price of the ask.
+        - qty (float): The quantity of the ask.
+        - timestamp (int): The timestamp of the update.
+        - callback (object): An optional callback object to handle ask depth updates.
+        """
         price_tick = round(price / self.tick_size)
         prev_qty = self.ask_depth.get(price_tick, 0)
         self.ask_depth[price_tick] = qty

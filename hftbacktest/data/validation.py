@@ -30,6 +30,18 @@ def _validate_data(
         lot_size=None,
         err_bound=1e-8
 ):
+    """
+    Validate the data for consistency based on specified criteria.
+
+    Args:
+        data (ndarray): The data to be validated.
+        tick_size (float, optional): The tick size for price validation. Defaults to None.
+        lot_size (float, optional): The lot size for quantity validation. Defaults to None.
+        err_bound (float, optional): The error bound for validation. Defaults to 1e-8.
+
+    Returns:
+        int: The number of rows with reversed exchange timestamps.
+    """
     num_reversed_exch_timestamp = 0
     prev_exch_timestamp = 0
     prev_local_timestamp = 0

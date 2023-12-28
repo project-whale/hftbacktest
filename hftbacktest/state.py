@@ -12,6 +12,18 @@ class State_:
             taker_fee,
             asset_type
     ):
+        """
+        Initialize the State_ object.
+
+        Args:
+            start_position (float): The starting position.
+            start_balance (float): The starting balance.
+            start_fee (float): The starting fee.
+            maker_fee (float): The fee for maker orders.
+            taker_fee (float): The fee for taker orders.
+            asset_type (object): The asset type object.
+
+        """
         self.position = start_position
         self.balance = start_balance
         self.fee = start_fee
@@ -23,6 +35,13 @@ class State_:
         self.asset_type = asset_type
 
     def apply_fill(self, order):
+        """
+        Apply a fill to the state.
+
+        Args:
+            order (object): The order object.
+
+        """
         fee = self.maker_fee if order.maker else self.taker_fee
         amount = self.asset_type.amount(order.exec_price, order.exec_qty)
         self.position += (order.exec_qty * order.side)
@@ -33,9 +52,30 @@ class State_:
         self.trade_amount += amount
 
     def equity(self, mid):
+        """
+        Calculate the equity of the state.
+
+        Args:
+            mid (float): The mid price.
+
+        Returns:
+            float: The equity.
+
+        """
         return self.asset_type.equity(mid, self.balance, self.position, self.fee)
 
     def reset(self, start_position, start_balance, start_fee, maker_fee, taker_fee):
+        """
+        Reset the state to the initial values.
+
+        Args:
+            start_position (float): The starting position.
+            start_balance (float): The starting balance.
+            start_fee (float): The starting fee.
+            maker_fee (float): The fee for maker orders.
+            taker_fee (float): The fee for taker orders.
+
+        """
         self.position = start_position
         self.balance = start_balance
         self.fee = start_fee

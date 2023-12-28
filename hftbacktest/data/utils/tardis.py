@@ -17,6 +17,31 @@ def convert(
         method: Literal['separate', 'adjust'] = 'separate',
         snapshot_mode: Literal['process', 'ignore_sod', 'ignore'] = 'process'
 ) -> NDArray:
+    """
+    Converts Tardis.dev data files into a format compatible with HftBacktest.
+
+    Args:
+        input_files (List[str]): Input filenames for both incremental book and trades files.
+        output_filename (Optional[str], optional): If provided, the converted data will be saved to the specified filename in npz format. Defaults to None.
+        buffer_size (int, optional): Sets a preallocated row size for the buffer. Defaults to 100_000_000.
+        ss_buffer_size (int, optional): Sets a preallocated row size for the snapshot buffer. Defaults to 10_000.
+        base_latency (float, optional): The value to be added to the feed latency. Defaults to 0.
+        method (Literal['separate', 'adjust'], optional): The method to correct reversed exchange timestamp events. Defaults to 'separate'.
+        snapshot_mode (Literal['process', 'ignore_sod', 'ignore'], optional): The mode for processing snapshot events. Defaults to 'process'.
+
+    Returns:
+        NDArray: Converted data compatible with HftBacktest.
+    """
+    # Function code here
+def convert(
+        input_files: List[str],
+        output_filename: Optional[str] = None,
+        buffer_size: int = 100_000_000,
+        ss_buffer_size: int = 10_000,
+        base_latency: float = 0,
+        method: Literal['separate', 'adjust'] = 'separate',
+        snapshot_mode: Literal['process', 'ignore_sod', 'ignore'] = 'process'
+) -> NDArray:
     r"""
     Converts Tardis.dev data files into a format compatible with HftBacktest.
 

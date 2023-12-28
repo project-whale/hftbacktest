@@ -187,6 +187,46 @@ def HftBacktest(
         trade_list_size: int = 0,
         exchange_model: ExchangeModelInitiator = None
 ):
+    """
+    Create a HftBacktest instance.
+
+    Args:
+        data (DataCollection): Data to be fed.
+        tick_size (float): Minimum price increment for the given asset.
+        lot_size (float): Minimum order quantity for the given asset.
+        maker_fee (float): Maker fee rate; a negative value indicates rebates.
+        taker_fee (float): Taker fee rate; a negative value indicates rebates.
+        order_latency (OrderLatencyModel): Order latency model. See :doc:`Order Latency Models <order_latency_models>`.
+        asset_type (AssetType): Either ``Linear`` or ``Inverse``. See :doc:`Asset types <asset_types>`.
+        queue_model (Optional[QueueModel], optional): Queue model with default set as :class:`.models.queue.RiskAverseQueueModel`. See :doc:`Queue Models <queue_models>`. Defaults to None.
+        snapshot (Optional[Data], optional): The initial market depth snapshot. Defaults to None.
+        start_position (float, optional): Starting position. Defaults to 0.
+        start_balance (float, optional): Starting balance. Defaults to 0.
+        start_fee (float, optional): Starting cumulative fees. Defaults to 0.
+        trade_list_size (int, optional): Buffer size for storing market trades; the default value of ``0`` indicates that market trades will not be stored in the buffer. Defaults to 0.
+        exchange_model (ExchangeModelInitiator, optional): Exchange model with default set as ``NoPartialFillExchange``. Defaults to None.
+
+    Returns:
+        SingleAssetHftBacktest: JIT'ed :class:`.SingleAssetHftBacktest`
+    """
+    
+    # Rest of the code...
+def HftBacktest(
+        data: DataCollection,
+        tick_size: float,
+        lot_size: float,
+        maker_fee: float,
+        taker_fee: float,
+        order_latency: OrderLatencyModel,
+        asset_type: AssetType,
+        queue_model: Optional[QueueModel] = None,
+        snapshot: Optional[Data] = None,
+        start_position: float = 0,
+        start_balance: float = 0,
+        start_fee: float = 0,
+        trade_list_size: int = 0,
+        exchange_model: ExchangeModelInitiator = None
+):
     r"""
     Create a HftBacktest instance.
 

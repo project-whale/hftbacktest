@@ -21,7 +21,7 @@ __all__ = (
 
 @njit
 def merge_on_local_timestamp(a: NDArray, b: NDArray) -> NDArray:
-    r"""
+    """
     Merges two data based on local timestamp.
 
     Args:

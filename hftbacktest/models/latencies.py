@@ -220,7 +220,7 @@ class BackwardFeedLatency:
 
 
 class IntpOrderLatency:
-    r"""
+    """
     Provides order latency by interpolating the actual historical order latency. This model provides the most accurate
     results. The units of the historical latency data should match the timestamp units of your feed data.
 
@@ -232,7 +232,7 @@ class IntpOrderLatency:
     entry_rn: int64
     resp_rn: int64
     data: float64[:, :]
-    
+
     def __init__(self, data):
         self.entry_rn = 0
         self.resp_rn = 0
@@ -289,7 +289,7 @@ class IntpOrderLatency:
             raise ValueError
         if timestamp >= self.data[-1, 1]:
             # Finds a valid latency.
-            for row_num in range(len(self.data) -1, -1, -1):
+            for row_num in range(len(self.data) - 1, -1, -1):
                 if self.data[row_num, 2] > 0 and self.data[row_num, 1] > 0:
                     return self.data[row_num, 2] - self.data[row_num, 1]
             raise ValueError

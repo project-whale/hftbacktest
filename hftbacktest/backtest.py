@@ -5,7 +5,7 @@ from .reader import WAIT_ORDER_RESPONSE_NONE, COL_LOCAL_TIMESTAMP, UNTIL_END_OF_
 
 
 class SingleAssetHftBacktest:
-    r"""
+    """
     Single Asset HftBacktest.
 
     .. warning::
@@ -205,7 +205,7 @@ class SingleAssetHftBacktest:
             order_type: int64 = LIMIT,
             wait: boolean = False
     ):
-        r"""
+        """
         Places a buy order.
 
         Args:
@@ -242,7 +242,7 @@ class SingleAssetHftBacktest:
             order_type: int64 = LIMIT,
             wait: boolean = False
     ):
-        r"""
+        """
         Places a sell order.
 
         Args:
@@ -271,7 +271,7 @@ class SingleAssetHftBacktest:
         return True
 
     def modify(self, order_id: int64, price: float64, qty: float64, wait: boolean = False):
-        r"""
+        """
         Modify the specified order.
 
         - If the adjusted total quantity(leaves_qty + executed_qty) is less than or equal to
@@ -296,7 +296,7 @@ class SingleAssetHftBacktest:
         return True
 
     def cancel(self, order_id: int64, wait: boolean = False):
-        r"""
+        """
         Cancel the specified order.
 
         Args:
@@ -314,7 +314,7 @@ class SingleAssetHftBacktest:
         return True
 
     def wait_order_response(self, order_id: int64, timeout: int64 = -1):
-        r"""
+        """
         Wait for the specified order response by order ID.
 
         Args:
@@ -352,6 +352,8 @@ class SingleAssetHftBacktest:
             before the specified timestamp, it returns ``False``.
         """
         if include_order_resp:
+            # TODO: Implement the logic for waiting for the next feed with order responses
+            pass
             timestamp = self.local.next_timestamp()
         else:
             timestamp = self.local._next_data_timestamp()

@@ -2,11 +2,11 @@ from numba import int64
 
 
 class LinearAsset:
-    r"""
+    """
     Linear asset: the common type of asset.
 
     Args:
-        contract_size: Contract size of the asset.
+        contract_size (int): Contract size of the asset.
     """
 
     contract_size: int64
@@ -22,11 +22,19 @@ class LinearAsset:
 
 
 class InverseAsset:
-    r"""
+    """
     Inverse asset: the contract's notional value is denominated in the quote currency.
 
     Args:
-        contract_size: Contract size of the asset.
+        contract_size (int): Contract size of the asset.
+
+    Attributes:
+        contract_size (int): Contract size of the asset.
+
+    Methods:
+        __init__(self, contract_size=1): Initializes an instance of InverseAsset.
+        amount(self, exec_price, qty): Calculates the amount of the asset based on the execution price and quantity.
+        equity(self, price, balance, position, fee): Calculates the equity of the asset based on the price, balance, position, and fee.
     """
 
     contract_size: int64

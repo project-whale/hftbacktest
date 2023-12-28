@@ -33,6 +33,14 @@ OUT_OF_BOOK_DELETION_ABOVE = 2
 @jitclass(spec)
 class DiffOrderBookSnapshot:
     def __init__(self, levels: int, tick_size: float, lot_size: float) -> None:
+        """
+        Initializes a DiffOrderBookSnapshot object.
+
+        Args:
+            levels (int): The number of levels in the order book.
+            tick_size (float): The tick size of the order book.
+            lot_size (float): The lot size of the order book.
+        """
         self.num_levels = levels
         # [num_levels, {price, qty, is_updated}]
         self.curr_bids = np.zeros((levels, 3), float64)
@@ -57,6 +65,19 @@ class DiffOrderBookSnapshot:
             ask_px: np.ndarray,
             ask_qty: np.ndarray
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        """
+        Takes a snapshot of the order book and returns the current bids, asks, and deleted levels.
+
+        Args:
+            bid_px (np.ndarray): The bid prices.
+            bid_qty (np.ndarray): The bid quantities.
+            ask_px (np.ndarray): The ask prices.
+            ask_qty (np.ndarray): The ask quantities.
+
+        Returns:
+            Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]: A tuple containing the current bids,
+            current asks, deleted bid levels, and deleted ask levels.
+        """
         if len(bid_px) != len(bid_qty) or len(ask_px) != len(ask_qty):
             raise ValueError
 
